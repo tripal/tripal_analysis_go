@@ -24,15 +24,19 @@ else {
   // a GO report.  Otherwise, if the user is not an administrator and 
   // there is no content then nothing get's shown.
   if (user_access('access administration pages')) { ?>
-    <div class="tripal-no-results">
-      There are no GO reports available
-      <p><br>Administrators, to view a GO report you must:
-      <ul>
-        <li>load GO assignments and associate them to features and a corresponding analysis</li>
-        <li>Set the <a href="<?php print url('admin/tripal/tripal_cv/cvtermpath');?>">cvtermpath</a> for the 'biological process', 'molecular_function' and 'cellular_component' vocabularies.</li>
-        <li>Populate the <a href="<?php print url('admin/tripal/tripal_mviews');?>">go_count_analysis</a> materialized view</li>
-      </ul> 
-      </p>
-    </div><?php
+    <div id="tripal_organism-go_summary-box" class="tripal_organism-info-box tripal-info-box">
+      <div  class="tripal_organism-info-box-title tripal-info-box-title">GO Analysis Reports</div>  
+      <div class="tripal-no-results">
+        There are no GO reports available
+        <p><br>Administrators, to view a GO report you must:
+        <ul>
+          <li>load GO assignments and associate them to features and a corresponding analysis</li>
+          <li>Set the <a href="<?php print url('admin/tripal/tripal_cv/cvtermpath');?>">cvtermpath</a> for the 'biological process', 'molecular_function' and 'cellular_component' vocabularies.</li>
+          <li>Populate the <a href="<?php print url('admin/tripal/tripal_mviews');?>">go_count_analysis</a> materialized view</li>
+        </ul> 
+        </p>
+      </div>
+    </div>
+    <?php
   }
 }

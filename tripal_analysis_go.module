@@ -177,14 +177,14 @@ function tripal_analysis_go_nodeapi(&$node, $op, $teaser, $page) {
             switch($node->type){
                case 'chado_organism':    
                   $node->content['tripal_organism_go_summary'] = array(
-   				      '#value' => theme('tripal_organism_go_summary',$node),
-		      			'#weight' => 5,
+   				          '#value' => theme('tripal_organism_go_summary',$node),
+		      			    '#weight' => 5,
                   );
                   break;
                case 'chado_feature':
                   $node->content['tripal_feature_go_terms'] = array(
-				         '#value' => theme('tripal_feature_go_terms',$node),
-      					'#weight' => 5,
+				            '#value' => theme('tripal_feature_go_terms',$node),
+      					    '#weight' => 5,
                   );
                   break;
             }
