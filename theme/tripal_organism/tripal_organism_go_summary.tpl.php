@@ -37,7 +37,7 @@ else {
              output and imports GO terms associated with features. The InterProScan Extension Module is obtained separately 
              from the core Tripal package.</li>
           <li>Set the <a href="<?php print url('admin/tripal/tripal_cv/cvtermpath');?>">cvtermpath</a> for the 'biological process', 'molecular_function' and 'cellular_component' vocabularies.</li>
-          <li>Populate the <a href="<?php print url('admin/tripal/tripal_mviews');?>">go_count_analysis</a> materialized view</li>
+          <li>Populate the <a href="<?php print url('admin/tripal/mviews');?>">go_count_analysis</a> materialized view</li>
           <li>Ensure the user <a href="<?php print url('admin/user/permissions'); ?>"> has permission</a> to view the GO analysis content</li>          
         </ul> 
         </p>
