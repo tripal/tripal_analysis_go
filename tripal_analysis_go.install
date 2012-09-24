@@ -40,7 +40,7 @@ function tripal_analysis_go_install(){
        FROM
          (SELECT DISTINCT CVT3.name as cvname, CVTP.object_id, 
             O.organism_id, F.feature_id
-          FROM {cvtermpath} CVTP
+          FROM cvtermpath CVTP
             INNER JOIN CVTerm CVT          ON CVTP.subject_id = CVT.cvterm_id
             INNER JOIN CVTerm CVT2         ON CVTP.type_id = CVT2.cvterm_id
             INNER JOIN CVTerm CVT3         ON CVTP.object_id = CVT3.cvterm_id
@@ -80,7 +80,7 @@ function tripal_analysis_go_install(){
        FROM
         (SELECT DISTINCT AF.analysis_id, AF.feature_id,CVT.name as cvname,
            CVT.cvterm_id,CVTP.object_id,CV.name, F.organism_id 
-         FROM {analysisfeatureprop} AFP
+         FROM analysisfeatureprop AFP
            INNER JOIN analysisfeature AF ON AF.analysisfeature_id = AFP.analysisfeature_id
            INNER JOIN feature F          ON AF.feature_id = F.feature_id
            INNER JOIN cvtermpath CVTP    ON CVTP.subject_id = AFP.type_id
