@@ -33,7 +33,6 @@ if (Drupal.jsEnabled) {
          return false;
       }
       // Form the link for the following ajax call 
-      baseurl = drupal_base_url;      
       var link = baseurl + '?q=tripal_analysis_go_org_charts/' + item;
       tripal_startAjax();
       $.ajax({
