@@ -18,7 +18,7 @@ if (Drupal.jsEnabled) {
     		   }
     		   selectbox[0].selectedIndex = index;
     		   tripal_analysis_go_org_charts(option.value);
-    	// Otherwise, show the first option by default
+    	   // Otherwise, show the first option by default
     	   } else {
     		   selectbox[0].selectedIndex = 1;
     		   tripal_analysis_go_org_charts(selectbox.val());
@@ -33,7 +33,7 @@ if (Drupal.jsEnabled) {
          return false;
       }
       // Form the link for the following ajax call 
-      baseurl = tripal_get_base_url();      
+      baseurl = drupal_base_url;      
       var link = baseurl + '?q=tripal_analysis_go_org_charts/' + item;
       tripal_startAjax();
       $.ajax({
