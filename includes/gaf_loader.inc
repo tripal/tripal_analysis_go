@@ -311,7 +311,7 @@ function tripal_analysis_go_load_gaf($gaf_file, $organism_id,$analysis_id,$add_o
          print "WARNING: Cannot find the feature: '$name'\n";         
       } else {
          // add the GO term to the feature
-         tripal_analysis_go_load_gaff_go_term($feature[0],$go_id,$remove,$analysis_id);
+         tripal_analysis_go_load_gaf_go_term($feature[0], $go_id, $remove, $analysis_id);
       }
    }
    return 1;
@@ -319,7 +319,7 @@ function tripal_analysis_go_load_gaf($gaf_file, $organism_id,$analysis_id,$add_o
 /**
 *
 */
-function tripal_analysis_go_load_gaff_go_term($feature,$dbxref,$remove,$analysis_id){
+function tripal_analysis_go_load_gaf_go_term($feature, $dbxref, $remove, $analysis_id){
 
    // get the database name from the reference.  If it doesn't exist then create one.
    $ref = explode(":",$dbxref);
