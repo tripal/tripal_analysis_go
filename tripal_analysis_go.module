@@ -246,8 +246,8 @@ function tripal_analysis_go_preprocess_tripal_feature_go_terms(&$variables){
 function tripal_analysis_go_preprocess_tripal_organism_go_summary(&$variables){
    $node = $variables['node'];
    $organism = $node->organism;
-   if (!is_object($feature->tripal_analysis_go)) {
-     $feature->tripal_analysis_go = new stdClass;
+   if (!is_object($organism->tripal_analysis_go)) {
+     $organism->tripal_analysis_go = new stdClass;
    }
    $organism->tripal_analysis_go->select_form = tripal_analysis_go_load_organism_go_summary($node);
 }
