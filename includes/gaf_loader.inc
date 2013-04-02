@@ -218,7 +218,7 @@ function tripal_analysis_go_gaf_load_form_submit ($form, &$form_state){
 /**
  *
  *
- * @ingroup gff3_loader
+ * @ingroup gaf_loader
  */
 function tripal_analysis_go_load_gaf($gaf_file, $organism_id,$analysis_id,$add_only =0, 
    $replace = 0, $remove = 0, $re_name, $type, $query_uniquename,
@@ -442,7 +442,12 @@ function tripal_analysis_go_load_gaff_insert_analysisfeatureprop ($feature_id, $
    // KEGG heir results sometimes have the same record more than once.
    if($analysisfeature_id){
       // Get the highest rank for this feature_id in analysisfeatureprop table
-      $sql = "SELECT rank FROM analysisfeatureprop WHERE analysisfeature_id = %d and type_id = %d ORDER BY rank DESC";
+      $sql = "
+        SELECT rank 
+        FROM {analysisfeatureprop} 
+        WHERE analysisfeature_id = %d and type_id = %d 
+        ORDER BY rank DESC
+      ";
       $previous_db = tripal_db_set_active('chado');
       $result = db_fetch_object(db_query($sql,$analysisfeature_id,$brite_id));
       tripal_db_set_active($previous);

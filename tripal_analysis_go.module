@@ -260,7 +260,7 @@ function tripal_analysis_go_select_form(&$form_state = NULL,$node){
    $sql = "
      SELECT DISTINCT A.analysis_id, A.name, GCA.organism_id
      FROM {go_count_analysis} GCA
-       INNER JOIN Analysis A on GCA.analysis_id = A.analysis_id
+       INNER JOIN {Analysis} A on GCA.analysis_id = A.analysis_id
      WHERE organism_id = %d
      ORDER BY analysis_id DESC
    ";
@@ -330,7 +330,7 @@ function tripal_analysis_go_load_organism_go_summary($node) {
    $sql = "
      SELECT A.analysis_id
      FROM {go_count_analysis} GCA
-       INNER JOIN Analysis A on GCA.analysis_id = A.analysis_id
+       INNER JOIN {Analysis} A on GCA.analysis_id = A.analysis_id
      WHERE organism_id = %d
    ";
    $previous_db = tripal_db_set_active('chado');
@@ -391,8 +391,8 @@ function tripal_analysis_go_cv_chart($chart_id){
         CNT.cvterm_id IN ( 
           SELECT CVTR.subject_id 
           FROM {CVTerm_relationship} CVTR 
-            INNER JOIN CVTerm CVT on CVTR.object_id = CVT.cvterm_id
-            INNER JOIN CV on CVT.cv_id = CV.cv_id
+            INNER JOIN {CVTerm} CVT on CVTR.object_id = CVT.cvterm_id
+            INNER JOIN {CV} on CVT.cv_id = CV.cv_id
           WHERE CVT.name = '$class' AND  
                  CV.name = '$class'
         )
@@ -441,7 +441,7 @@ function tripal_analysis_go_cvterm_add($cvterm_id,$tree_id){
   $sql = "
      SELECT DBX.accession
      FROM {cvterm} CVT
-       INNER JOIN dbxref DBX on DBX.dbxref_id = CVT.dbxref_id
+       INNER JOIN {dbxref} DBX on DBX.dbxref_id = CVT.dbxref_id
      WHERE cvterm_id = %d
   ";
   $previous_db = tripal_db_set_active('chado');
@@ -462,7 +462,7 @@ function tripal_analysis_go_get_goterm_features($cvterm_id,$tree_id){
    $sql = "
       SELECT DBX.accession
       FROM {cvterm} CVT
-        INNER JOIN dbxref DBX on DBX.dbxref_id = CVT.dbxref_id
+        INNER JOIN {dbxref} DBX on DBX.dbxref_id = CVT.dbxref_id
       WHERE cvterm_id = %d
    ";
    $previous_db = tripal_db_set_active('chado');
@@ -477,11 +477,11 @@ function tripal_analysis_go_get_goterm_features($cvterm_id,$tree_id){
    $sql = "
       SELECT DISTINCT F.name,F.residues,F.feature_id
       FROM {cvtermpath} CVTP
-         INNER JOIN CVTerm CVT1 on CVTP.subject_id = CVT1.cvterm_id
-         INNER JOIN CVTerm CVT2 on CVTP.object_id = CVT2.cvterm_id
-         INNER JOIN AnalysisFeatureProp AFP on AFP.type_id = CVTP.subject_id 
-         INNER JOIN AnalysisFeature AF on AF.analysisfeature_id = AFP.analysisfeature_id
-         INNER JOIN Feature F on AF.feature_id = F.feature_id
+         INNER JOIN {CVTerm} CVT1 on CVTP.subject_id = CVT1.cvterm_id
+         INNER JOIN {CVTerm} CVT2 on CVTP.object_id = CVT2.cvterm_id
+         INNER JOIN {AnalysisFeatureProp} AFP on AFP.type_id = CVTP.subject_id 
+         INNER JOIN {AnalysisFeature} AF on AF.analysisfeature_id = AFP.analysisfeature_id
+         INNER JOIN {Feature} F on AF.feature_id = F.feature_id
       WHERE CVTP.object_id = %d and F.organism_id = %d and AF.analysis_id = %d
       ORDER BY F.name
    ";
@@ -493,8 +493,8 @@ function tripal_analysis_go_get_goterm_features($cvterm_id,$tree_id){
       $sql = "
          SELECT CVT.name,DBX.accession 
          FROM {Feature_CVTerm} FCVT 
-           INNER JOIN CVTerm CVT on FCVT.cvterm_id = CVT.cvterm_id
-           INNER JOIN DBXref DBX on CVT.dbxref_id = DBX.dbxref_id
+           INNER JOIN {CVTerm} CVT on FCVT.cvterm_id = CVT.cvterm_id
+           INNER JOIN {DBXref} DBX on CVT.dbxref_id = DBX.dbxref_id
          WHERE FCVT.feature_id = %d
       ";
 
@@ -519,9 +519,9 @@ function tripal_analysis_go_load_feature_terms($feature) {
        SELECT DISTINCT FCVT.feature_id,DBX.accession,CVT.name as goterm, 
           CVT.cvterm_id as go_id, CV.name as cvname, CVT.definition
        FROM {Feature_Cvterm} FCVT  
-          INNER JOIN Cvterm CVT           ON CVT.cvterm_ID = FCVT.cvterm_ID
-          INNER JOIN CV                   ON CV.cv_id = CVT.cv_id  
-          INNER JOIN dbxref DBX           ON DBX.dbxref_id = CVT.dbxref_id
+          INNER JOIN {Cvterm} CVT           ON CVT.cvterm_ID = FCVT.cvterm_ID
+          INNER JOIN {CV}                   ON CV.cv_id = CVT.cv_id  
+          INNER JOIN {dbxref} DBX           ON DBX.dbxref_id = CVT.dbxref_id
         WHERE      
           (CV.name = 'biological_process' OR 
            CV.name = 'cellular_component' OR 
