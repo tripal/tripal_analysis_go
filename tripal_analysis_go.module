@@ -260,13 +260,11 @@ function tripal_analysis_go_select_form(&$form_state = NULL,$node){
    $sql = "
      SELECT DISTINCT A.analysis_id, A.name, GCA.organism_id
      FROM {go_count_analysis} GCA
-       INNER JOIN {Analysis} A on GCA.analysis_id = A.analysis_id
+       INNER JOIN {analysis} A on GCA.analysis_id = A.analysis_id
      WHERE organism_id = %d
      ORDER BY analysis_id DESC
    ";
-   $previous_db = tripal_db_set_active('chado');
-   $results = db_query($sql,$node->organism->organism_id);
-   tripal_db_set_active($previous_db);
+   $results = chado_query($sql,$node->organism->organism_id);
 
    $analyses = array();
    $analyses[''] = '';
@@ -328,14 +326,14 @@ function tripal_analysis_go_load_organism_go_summary($node) {
 	
    // check to see if we have any analyses
    $sql = "
-     SELECT A.analysis_id
+     SELECT DISTINCT A.analysis_id
      FROM {go_count_analysis} GCA
-       INNER JOIN {Analysis} A on GCA.analysis_id = A.analysis_id
+       INNER JOIN {analysis} A on GCA.analysis_id = A.analysis_id
      WHERE organism_id = %d
    ";
-   $previous_db = tripal_db_set_active('chado');
-   $results = db_query($sql,$organism->organism_id);
-   tripal_db_set_active($previous_db);
+   
+   $results = chado_query($sql,$organism->organism_id);
+   
 
    # check to ensure we have access to at least one of the GO analyses
    $has_results = 0;
@@ -364,10 +362,9 @@ function tripal_analysis_go_cv_chart($chart_id){
   $analysis_id = preg_replace("/^tripal_analysis_go_cv_chart_(\d+)-(\d+)_(bp|cc|mf)$/","$2",$chart_id);
   $type        = preg_replace("/^tripal_analysis_go_cv_chart_(\d+)-(\d+)_(bp|cc|mf)$/","$3",$chart_id);
 
-  $sql = "SELECT * FROM {Analysis} WHERE analysis_id = %d";
-  $previous_db = tripal_db_set_active('chado');  // use chado database
-  $analysis = db_fetch_object(db_query($sql,$analysis_id));
-  tripal_db_set_active($previous_db);  // now use drupal database  
+  $sql = "SELECT * FROM {Analysis} WHERE analysis_id = %d";  
+  $analysis = db_fetch_object(chado_query($sql,$analysis_id));
+    
  
   if(strcmp($type,'mf')==0){
      $class = 'molecular_function';
@@ -443,10 +440,8 @@ function tripal_analysis_go_cvterm_add($cvterm_id,$tree_id){
      FROM {cvterm} CVT
        INNER JOIN {dbxref} DBX on DBX.dbxref_id = CVT.dbxref_id
      WHERE cvterm_id = %d
-  ";
-  $previous_db = tripal_db_set_active('chado');
-  $xref = db_fetch_object(db_query($sql,$cvterm_id));
-  tripal_db_set_active($previous_db);
+  ";  
+  $xref = db_fetch_object(chado_query($sql,$cvterm_id));  
 
   $link = url("download_goterm_features/$cvterm_id/$tree_id");
   $options = array(
@@ -464,10 +459,8 @@ function tripal_analysis_go_get_goterm_features($cvterm_id,$tree_id){
       FROM {cvterm} CVT
         INNER JOIN {dbxref} DBX on DBX.dbxref_id = CVT.dbxref_id
       WHERE cvterm_id = %d
-   ";
-   $previous_db = tripal_db_set_active('chado');
-   $xref = db_fetch_object(db_query($sql,$cvterm_id));
-   tripal_db_set_active($previous_db);
+   ";   
+   $xref = db_fetch_object(chado_query($sql,$cvterm_id));   
 
    drupal_set_header('Content-Type: text');
    drupal_set_header('Content-Disposition: attachment; filename="GO_'.$xref->accession.'.fasta"');
@@ -484,10 +477,8 @@ function tripal_analysis_go_get_goterm_features($cvterm_id,$tree_id){
          INNER JOIN {Feature} F on AF.feature_id = F.feature_id
       WHERE CVTP.object_id = %d and F.organism_id = %d and AF.analysis_id = %d
       ORDER BY F.name
-   ";
-   $previous_db = tripal_db_set_active('chado');
-   $results = db_query($sql,$cvterm_id,$organism_id,$analysis_id);
-   tripal_db_set_active($previous_db);
+   ";   
+   $results = chado_query($sql,$cvterm_id,$organism_id,$analysis_id);   
    while($feature = db_fetch_object($results)){
       // get the go term information for each sequence
       $sql = "
@@ -497,10 +488,8 @@ function tripal_analysis_go_get_goterm_features($cvterm_id,$tree_id){
            INNER JOIN {DBXref} DBX on CVT.dbxref_id = DBX.dbxref_id
          WHERE FCVT.feature_id = %d
       ";
-
-      $previous_db = tripal_db_set_active('chado');
-      $terms = db_query($sql,$feature->feature_id);
-      tripal_db_set_active($previous_db);
+      
+      $terms = chado_query($sql,$feature->feature_id);
       $desc = '[';
       while($term = db_fetch_object($terms)){
          $desc .= "GO:$term->accession $term->name; ";
@@ -529,10 +518,8 @@ function tripal_analysis_go_load_feature_terms($feature) {
           FCVT.feature_id = %d
         ORDER BY CV.name, CVT.name
    ";
-
-   $previous_db = tripal_db_set_active('chado');
-   $results = db_query($sql,$feature->feature_id);
-   tripal_db_set_active($previous_db);
+   
+   $results = chado_query($sql,$feature->feature_id);
    $i=0;
    $terms = array();
    while($term = db_fetch_object($results)){

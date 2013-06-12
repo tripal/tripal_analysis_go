@@ -19,9 +19,7 @@ function tripal_analysis_go_gaf_load_form (){
    );
    // get the list of organisms
    $sql = "SELECT * FROM {organism} ORDER BY genus, species";
-   $previous_db = tripal_db_set_active('chado');  // use chado database
-   $org_rset = db_query($sql);
-   tripal_db_set_active($previous_db);  // now use drupal database
+   $org_rset = chado_query($sql);
    $organisms = array();
    $organisms[''] = '';
    while($organism = db_fetch_object($org_rset)){
@@ -80,9 +78,7 @@ function tripal_analysis_go_gaf_load_form (){
 
    // get the list of organisms
    $sql = "SELECT * FROM {analysis} ORDER BY name";
-   $previous_db = tripal_db_set_active('chado');  // use chado database
-   $org_rset = db_query($sql);
-   tripal_db_set_active($previous_db);  // now use drupal database
+   $org_rset = chado_query($sql);
    $analyses = array();
    $analyses[''] = '';
    while($analysis = db_fetch_object($org_rset)){
@@ -169,12 +165,12 @@ function tripal_analysis_go_gaf_load_form_validate ($form, &$form_state){
                     INNER JOIN {cv} CV on CVT.cv_id = CV.cv_id
                     LEFT JOIN {cvtermsynonym} CVTS on CVTS.cvterm_id = CVT.cvterm_id
                  WHERE cv.name = '%s' and (CVT.name = '%s' or CVTS.synonym = '%s')";
-   $cvterm = db_fetch_object(db_query($cvtermsql,'sequence',$type,$type));
+   $cvterm = db_fetch_object(chado_query($cvtermsql,'sequence',$type,$type));
    if(!$cvterm){
       form_set_error('type',t("The Sequence Ontology (SO) term selected for the sequence type is not available in the database. Please check spelling or select another."));
    }
    if($rel_type){
-      $cvterm = db_fetch_object(db_query($cvtermsql,'sequence',$parent_type,$parent_type));
+      $cvterm = db_fetch_object(chado_query($cvtermsql,'sequence',$parent_type,$parent_type));
       if(!$cvterm){
          form_set_error('parent_type',t("The Sequence Ontology (SO) term selected for the parent relationship is not available in the database. Please check spelling or select another."));
       }
@@ -448,9 +444,7 @@ function tripal_analysis_go_load_gaff_insert_analysisfeatureprop ($feature_id, $
         WHERE analysisfeature_id = %d and type_id = %d 
         ORDER BY rank DESC
       ";
-      $previous_db = tripal_db_set_active('chado');
-      $result = db_fetch_object(db_query($sql,$analysisfeature_id,$brite_id));
-      tripal_db_set_active($previous);
+      $result = db_fetch_object(chado_query($sql,$analysisfeature_id,$brite_id));
       $rank = 0;
       if ($result and $result->rank > 0) {
          $rank = $result->rank + 1;
