@@ -299,20 +299,20 @@ function tripal_analysis_go_org_charts ($element) {
       $content = "
 
         <b>Biological Process</b>
-        <!-- <br><i>Expand the tree to browse term counts. Click a term to view term details.</i>
-        <div class=\"tripal_cv_tree\"  id=\"tripal_analysis_go_cv_tree_".$organism_id."-".$analysis_id."_bp\"></div> -->
+        <br><i>Expand the tree to browse term counts. Click a term to view term details.</i>
+        <div class=\"tripal_cv_tree\"  id=\"tripal_analysis_go_cv_tree_".$organism_id."-".$analysis_id."_bp\"></div>
 	      <br><br><img class=\"tripal_cv_chart\" id=\"tripal_analysis_go_cv_chart_".$organism_id."-".$analysis_id."_bp\" src=\"\" border=\"0\">	   
 	      <br><br><br><br>
 
         <b>Cellular Component</b>
-        <!-- <br><i>Expand the tree to browse term counts. Click a term to view term details.</i>
-        <div class=\"tripal_cv_tree\"  id=\"tripal_analysis_go_cv_tree_".$organism_id."-".$analysis_id."_cc\"></div> -->
+        <br><i>Expand the tree to browse term counts. Click a term to view term details.</i>
+        <div class=\"tripal_cv_tree\"  id=\"tripal_analysis_go_cv_tree_".$organism_id."-".$analysis_id."_cc\"></div>
         <br><br><img class=\"tripal_cv_chart\" id=\"tripal_analysis_go_cv_chart_".$organism_id."-".$analysis_id."_cc\" src=\"\" border=\"0\">
 
         <br><br><br><br>
         <b>Molecular Function</b>       
-        <!-- <br><i>Expand the tree to browse term counts. Click a term to view term details.</i>
-        <div class=\"tripal_cv_tree\"  id=\"tripal_analysis_go_cv_tree_".$organism_id."-".$analysis_id."_mf\"></div> -->      
+        <br><i>Expand the tree to browse term counts. Click a term to view term details.</i>
+        <div class=\"tripal_cv_tree\"  id=\"tripal_analysis_go_cv_tree_".$organism_id."-".$analysis_id."_mf\"></div>      
         <br><br><img class=\"tripal_cv_chart\" id=\"tripal_analysis_go_cv_chart_".$organism_id."-".$analysis_id."_mf\" src=\"\" border=\"0\">
       ";
    }
