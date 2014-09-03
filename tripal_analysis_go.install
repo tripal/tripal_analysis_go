@@ -11,7 +11,7 @@
 function tripal_analysis_go_install(){
   
    // Register this module as an analysis.
-   tripal_analysis_register_child('tripal_analysis_go');
+   tripal_register_analysis_child('tripal_analysis_go');
    
    // Add the materialized views.
    tripal_analysis_go_add_mviews();
@@ -76,7 +76,7 @@ function tripal_analysis_go_add_mviews() {
       'cvterm' => array(
         'table' => 'cvterm',
         'columns' => array(
-          'cvterm_id' => 'analysis_id',
+          'cvterm_id' => 'cvterm_id',
         ),
       ),
       'organism' => array(
@@ -146,7 +146,7 @@ function tripal_analysis_go_add_mviews() {
       'cvterm' => array(
         'table' => 'cvterm',
         'columns' => array(
-          'cvterm_id' => 'analysis_id',
+          'cvterm_id' => 'cvterm_id',
         ),
       ),
       'organism' => array(
@@ -181,7 +181,6 @@ function tripal_analysis_go_uninstall(){
   }
   // Unregister the child analysis.
   tripal_unregister_analysis_child('tripal_analysis_go');
-
 }
 
 /*******************************************************************************
@@ -191,7 +190,7 @@ function tripal_analysis_go_uninstall(){
 function tripal_analysis_go_requirements($phase) {
    $requirements = array();
    if ($phase == 'install') {
-      if (!function_exists('tripal_create_moddir') || !function_exists('tripal_analysis_register_child')) {
+      if (!function_exists('tripal_create_moddir') || !function_exists('tripal_register_analysis_child')) {
          $requirements ['tripal_analysis_go'] = array(
             'title' => "tripal_analysis_go",
             'value' => "error. Some required modules are just being installed. Please try again.",

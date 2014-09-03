@@ -1,7 +1,11 @@
 <?php
 
 require_once "includes/tripal_analysis_go.gaf_loader.inc";
+require_once "includes/tripal_analysis_go.admin.inc";
+require_once "includes/tripal_analysis_go.charts.inc";
 require_once "theme/tripal_analysis_go.theme.inc";
+
+
 
 /**
  * Implements hook_init().
