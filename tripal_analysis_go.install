@@ -1,114 +1,186 @@
 <?php
+/**
+ * @file
+ *
+ * Tripal Analysis GO Module
+ */
 
-/*******************************************************************************
-*  Implementation of hook_install();
-*/
+/**
+ *  Implementation of hook_install();
+ */
 function tripal_analysis_go_install(){
   
+   // Register this module as an analysis.
    tripal_analysis_register_child('tripal_analysis_go');
    
-   // The following view will create counts of features that are assigned
-   // either directly or by ancestry each GO term. The count is organized by
-   // organisms.
-   if (db_table_exists('go_count_organism')) {
-      $sql = "DROP TABLE go_count_organism";
-      chado_query($sql);
-   }
-   if (db_table_exists('go_count_analysis')) {
-      $sql = "DROP TABLE go_count_analysis";
-      chado_query($sql);
-   }
+   // Add the materialized views.
+   tripal_analysis_go_add_mviews();
    
-   tripal_add_mview(
-      // view name
-      'go_count_organism',
-      // tripal module name
-      'tripal_analysis_go',
-      // table name
-      'go_count_organism',
-      // table schema definition
-      'cvname character varying(255),
-       cvterm_id integer,
-       organism_id integer,
-       feature_count integer',
-      // columns for indexing
-      'cvterm_id,organism_id',
-      // SQL statement to populate the view
-      "SELECT T1.cvname, T1.object_id, T1.organism_id, count(T1.feature_id)
-       FROM
-         (SELECT DISTINCT CVT3.name as cvname, CVTP.object_id, 
-            O.organism_id, F.feature_id
-          FROM cvtermpath CVTP
-            INNER JOIN CVTerm CVT          ON CVTP.subject_id = CVT.cvterm_id
-            INNER JOIN CVTerm CVT2         ON CVTP.type_id = CVT2.cvterm_id
-            INNER JOIN CVTerm CVT3         ON CVTP.object_id = CVT3.cvterm_id
-            INNER JOIN Feature_cvterm FCVT ON FCVT.cvterm_id = CVT.cvterm_id
-            INNER JOIN Feature F           ON FCVT.feature_id = F.feature_id
-            INNER JOIN CV                  ON CV.cv_id = CVT.cv_id
-            INNER JOIN Organism O          ON O.organism_id = F.organism_id
-          WHERE (CV.name = 'biological_process' or 
-                 CV.name = 'molecular_function' or 
-                 CV.name = 'cellular_component')
-         ) as T1
-       GROUP BY T1.cvname,T1.object_id,T1.organism_id",
-      // special index
-      ''
-   );
-
-   // The following view will create counts of features that are assigned
-   // either directly or by ancestry each GO term. The count is organized by
-   // tripal_go_analysis analyses.
-   tripal_add_mview(
-      // view name
-      'go_count_analysis',
-      // tripal module name
-      'tripal_analysis_go',
-      // table name
-      'go_count_analysis',
-      // table schema definition
-      'cvname character varying(255),
-       cvterm_id integer,
-       analysis_id integer,
-       organism_id integer,
-       feature_count integer',
-      // columns for indexing
-      'cvterm_id,analysis_id,organism_id',
-      // SQL statement to populate the view
-      "SELECT T1.cvname,T1.cvterm_id,T1.analysis_id,T1.organism_id,count(*) as feature_count 
-       FROM
-        (SELECT DISTINCT AF.analysis_id, AF.feature_id,CVT.name as cvname,
-           CVT.cvterm_id,CVTP.object_id,CV.name, F.organism_id 
-         FROM analysisfeatureprop AFP
-           INNER JOIN analysisfeature AF ON AF.analysisfeature_id = AFP.analysisfeature_id
-           INNER JOIN feature F          ON AF.feature_id = F.feature_id
-           INNER JOIN cvtermpath CVTP    ON CVTP.subject_id = AFP.type_id
-           INNER JOIN cvterm CVT         ON CVTP.object_id = CVT.cvterm_id
-           INNER JOIN CV                 ON CV.cv_id = CVT.cv_id
-
-         WHERE  
-           (CV.name = 'biological_process' or 
-            CV.name = 'molecular_function' or 
-            CV.name = 'cellular_component')) as T1
-       GROUP BY T1.cvname,T1.cvterm_id,T1.analysis_id,T1.organism_id",
-      // special index
-      ''
-   );
 }
 
-/*******************************************************************************
-* Implementation of hook_uninstall()
-*/
+/**
+ * Adds materialized views for this module.
+ */
+function tripal_analysis_go_add_mviews() {
+  
+  $view_name = 'go_count_organism';
+  $comment = t('This view is for counting features assigned to GO terms.');
+  
+  // Drop the MView table if it exists
+  $mview_id = tripal_get_mview_id($view_name);
+  if ($mview_id) {
+    tripal_delete_mview($mview_id);
+  }
+  
+  $sql = "
+    SELECT T1.cvname, T1.object_id, T1.organism_id, count(T1.feature_id)
+    FROM
+     (SELECT DISTINCT CVT3.name as cvname, CVTP.object_id,
+        O.organism_id, F.feature_id
+      FROM cvtermpath CVTP
+        INNER JOIN CVTerm CVT          ON CVTP.subject_id = CVT.cvterm_id
+        INNER JOIN CVTerm CVT2         ON CVTP.type_id = CVT2.cvterm_id
+        INNER JOIN CVTerm CVT3         ON CVTP.object_id = CVT3.cvterm_id
+        INNER JOIN Feature_cvterm FCVT ON FCVT.cvterm_id = CVT.cvterm_id
+        INNER JOIN Feature F           ON FCVT.feature_id = F.feature_id
+        INNER JOIN CV                  ON CV.cv_id = CVT.cv_id
+        INNER JOIN Organism O          ON O.organism_id = F.organism_id
+      WHERE (CV.name = 'biological_process' or
+             CV.name = 'molecular_function' or
+             CV.name = 'cellular_component')
+     ) as T1
+    GROUP BY T1.cvname,T1.object_id,T1.organism_id
+  ";
+  
+  $schema = array(
+    'table' => $view_name,
+    'description' => $comment,
+    'fields' => array(
+      'cvterm_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'organism_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'feature_count' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      $view_name . '_indx0' => array('cvterm_id', 'organism_id'),
+    ),
+    'foreign keys' => array(
+      'cvterm' => array(
+        'table' => 'cvterm',
+        'columns' => array(
+          'cvterm_id' => 'analysis_id',
+        ),
+      ),
+      'organism' => array(
+        'table' => 'organism',
+        'columns' => array(
+          'organism_id' => 'organism_id',
+        ),
+      ),
+    ),
+  );
+  tripal_add_mview($view_name, 'tripal_analysis_go', $schema, $sql, $comment);
+   
+
+  $view_name = 'go_count_analysis';
+  $comment = t('This view is for counting features assigned to GO terms by a particular analysis.');
+  
+  // Drop the MView table if it exists
+  $mview_id = tripal_get_mview_id($view_name);
+  if ($mview_id) {
+    tripal_delete_mview($mview_id);
+  }
+  
+  $sql = "
+    SELECT T1.cvname,T1.cvterm_id,T1.analysis_id,T1.organism_id,count(*) as feature_count
+    FROM
+    (SELECT DISTINCT AF.analysis_id, AF.feature_id,CVT.name as cvname,
+       CVT.cvterm_id,CVTP.object_id,CV.name, F.organism_id
+     FROM analysisfeatureprop AFP
+       INNER JOIN analysisfeature AF ON AF.analysisfeature_id = AFP.analysisfeature_id
+       INNER JOIN feature F          ON AF.feature_id = F.feature_id
+       INNER JOIN cvtermpath CVTP    ON CVTP.subject_id = AFP.type_id
+       INNER JOIN cvterm CVT         ON CVTP.object_id = CVT.cvterm_id
+       INNER JOIN CV                 ON CV.cv_id = CVT.cv_id
+    
+     WHERE
+       (CV.name = 'biological_process' or
+        CV.name = 'molecular_function' or
+        CV.name = 'cellular_component')) as T1
+    GROUP BY T1.cvname,T1.cvterm_id,T1.analysis_id,T1.organism_id
+  ";
+
+  $schema = array(
+    'table' => $view_name,
+    'description' => $comment,
+    'fields' => array(
+      'cvterm_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'organism_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'analysis_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'feature_count' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      $view_name . '_indx0' => array('cvterm_id', 'organism_id', 'analysis_id'),
+    ),
+    'foreign keys' => array(
+      'cvterm' => array(
+        'table' => 'cvterm',
+        'columns' => array(
+          'cvterm_id' => 'analysis_id',
+        ),
+      ),
+      'organism' => array(
+        'table' => 'organism',
+        'columns' => array(
+          'organism_id' => 'organism_id',
+        ),
+      ),
+      'analysis' => array(
+        'table' => 'analysis',
+        'columns' => array(
+          'analysis_id' => 'analysis_id',
+        ),
+      ),
+    ),
+  );
+  tripal_add_mview($view_name, 'tripal_analysis_go', $schema, $sql, $comment);
+}
+/**
+ * Implements hook_uninstall()
+ */
 function tripal_analysis_go_uninstall(){
 
-   $mview = tripal_mviews_get_mview_id('go_count_organism');
-   if($mview){
-      tripal_mviews_action('delete',$mview);
-   }
-   $mview = tripal_mviews_get_mview_id('go_count_analysis');
-   if($mview){
-      tripal_mviews_action('delete',$mview);
-   }
-   tripal_analysis_unregister_child('tripal_analysis_go');
+  // Remove materialized views
+  $mview = tripal_get_mview_id('go_count_analysis');
+  if ($mview) {
+    tripal_delete_mview($mview_id);
+  }
+  $mview = tripal_get_mview_id('go_count_organism');
+  if ($mview) {
+    tripal_delete_mview($mview_id);
+  }
+  // Unregister the child analysis.
+  tripal_unregister_analysis_child('tripal_analysis_go');
 
 }
 
