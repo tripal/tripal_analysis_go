@@ -3,10 +3,8 @@
 function tripal_analysis_go_gaf_load_form (){
 
    $form['notice']= array(
-      '#type' => 'item',
-      '#value' => t('Note: currently, the GAF loader only uses column 2 (Object ID) and 5 (GO ID) 
-          from the GAF file, and simply imports GO terms for the features. 
-          Further support for this file format will be provided later.'),
+      '#markup' => t('<b>Note:</b> currently, the GAF loader only uses column 2 (Object ID) and 5 (GO ID) 
+          from the GAF file, and simply imports GO terms for the features.'),
    );
 
    $form['gaf_file']= array(
@@ -22,7 +20,7 @@ function tripal_analysis_go_gaf_load_form (){
    $org_rset = chado_query($sql);
    $organisms = array();
    $organisms[''] = '';
-   while($organism = db_fetch_object($org_rset)){
+   while($organism = $org_rset->fetchObject()){
       $organisms[$organism->organism_id] = "$organism->genus $organism->species ($organism->common_name)";
    }
    $form['organism_id'] = array (
@@ -44,7 +42,6 @@ function tripal_analysis_go_gaf_load_form (){
       '#description' => t('Select this checboxk if the feature name in the GAF file '.
         'matches the uniquename in the database.  By default, the feature will '.
         'be mapped to the "name" of the feature.'),
-      '#default_value' => $query_uniquename,
 	);
    $form['import_options'] = array(
       '#type' => 'fieldset',
@@ -56,6 +53,7 @@ function tripal_analysis_go_gaf_load_form (){
       '#title' => t('Add GO terms'),
       '#required' => FALSE,
       '#description' => t('GO terms in the GAF file will be added to each feature.'),
+      '#default_value' => 1,
    );
 //   $form['import_options']['replace']= array(
 //      '#type' => 'checkbox',
@@ -81,7 +79,7 @@ function tripal_analysis_go_gaf_load_form (){
    $org_rset = chado_query($sql);
    $analyses = array();
    $analyses[''] = '';
-   while($analysis = db_fetch_object($org_rset)){
+   while($analysis = $org_rset->fetchObject()){
       $analyses[$analysis->analysis_id] = "$analysis->name ($analysis->program $analysis->programversion, $analysis->sourcename)";
    }
    $form['analysis']['analysis_id'] = array (
@@ -164,13 +162,15 @@ function tripal_analysis_go_gaf_load_form_validate ($form, &$form_state){
                  FROM {cvterm} CVT
                     INNER JOIN {cv} CV on CVT.cv_id = CV.cv_id
                     LEFT JOIN {cvtermsynonym} CVTS on CVTS.cvterm_id = CVT.cvterm_id
-                 WHERE cv.name = '%s' and (CVT.name = '%s' or CVTS.synonym = '%s')";
-   $cvterm = db_fetch_object(chado_query($cvtermsql,'sequence',$type,$type));
+                 WHERE cv.name = :cv_name and (CVT.name = :cvtname or CVTS.synonym = :synonym)";
+   $args = array(':cv_name' => 'sequence', ':cvtname' => $type, ':synonym' => $type);
+   $cvterm = chado_query($cvtermsql, $args)->fetchObject();
    if(!$cvterm){
       form_set_error('type',t("The Sequence Ontology (SO) term selected for the sequence type is not available in the database. Please check spelling or select another."));
    }
    if($rel_type){
-      $cvterm = db_fetch_object(chado_query($cvtermsql,'sequence',$parent_type,$parent_type));
+     $args = array(':cv_name' => 'sequence', ':cvtname' => $parent_type, ':synonym' => $parent_type);
+      $cvterm = chado_query($cvtermsql, $args)->fetchObject();
       if(!$cvterm){
          form_set_error('parent_type',t("The Sequence Ontology (SO) term selected for the parent relationship is not available in the database. Please check spelling or select another."));
       }
@@ -421,8 +421,7 @@ function tripal_analysis_go_load_gaf_go_term($feature, $dbxref, $remove, $analys
 *
 */
 function tripal_analysis_go_load_gaff_insert_analysisfeatureprop ($feature_id, $analysis_id,
-   $brite_id,$keggterm)
-{
+   $brite_id,$keggterm) {
 
    // add the analysisfeature record if it doesn't already exist.
    $values = array('feature_id' => $feature_id,'analysis_id' => $analysis_id);
@@ -441,13 +440,14 @@ function tripal_analysis_go_load_gaff_insert_analysisfeatureprop ($feature_id, $
       $sql = "
         SELECT rank 
         FROM {analysisfeatureprop} 
-        WHERE analysisfeature_id = %d and type_id = %d 
+        WHERE analysisfeature_id = :afeature_id and type_id = :type_id 
         ORDER BY rank DESC
       ";
-      $result = db_fetch_object(chado_query($sql,$analysisfeature_id,$brite_id));
+      $args = array(':afeature_id' => $analysisfeature_id, ':type_id' => $brite_id);
+      $result = chado_query($sql, $args)->fetchObject();
       $rank = 0;
       if ($result and $result->rank > 0) {
-         $rank = $result->rank + 1;
+        $rank = $result->rank + 1;
       }
 
       $values = array(
