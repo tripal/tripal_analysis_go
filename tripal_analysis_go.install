@@ -23,13 +23,13 @@ function tripal_analysis_go_install(){
 function tripal_analysis_go_add_mviews() {
   $view_name = 'go_count_analysis';
   $comment = t('This view is for counting features assigned to GO terms by a particular analysis.');
-  
+
   // Drop the MView table if it exists
   $mview_id = tripal_get_mview_id($view_name);
   if ($mview_id) {
     tripal_delete_mview($mview_id);
   }
-  
+
   $sql = "
     SELECT T1.cvname,T1.cvterm_id,T1.analysis_id,T1.organism_id,count(*) as feature_count
     FROM
@@ -41,7 +41,7 @@ function tripal_analysis_go_add_mviews() {
        INNER JOIN cvtermpath CVTP    ON CVTP.subject_id = AFP.type_id
        INNER JOIN cvterm CVT         ON CVTP.object_id = CVT.cvterm_id
        INNER JOIN CV                 ON CV.cv_id = CVT.cv_id
-    
+
      WHERE
        (CV.name = 'biological_process' or
         CV.name = 'molecular_function' or
@@ -118,11 +118,12 @@ function tripal_analysis_go_uninstall(){
 function tripal_analysis_go_requirements($phase) {
   $requirements = array();
   if ($phase == 'install') {
-    if (!function_exists('tripal_create_moddir') || !function_exists('tripal_register_analysis_child')) {
-      $requirements ['tripal_analysis_go'] = array(
-        'title' => "tripal_analysis_go",
-        'value' => "error. Some required modules are just being installed. Please try again.",
-        'severity' => REQUIREMENT_ERROR,
+    // make sure chado is installed
+    if (!$GLOBALS["chado_is_installed"]) {
+      $requirements ['tripal_feature'] = array(
+          'title' => "t ripal_feature",
+          'value' => "ERROR: Chado must be installed before this module can be enabled",
+          'severity' => REQUIREMENT_ERROR,
       );
     }
   }
