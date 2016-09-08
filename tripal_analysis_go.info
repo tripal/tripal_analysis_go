@@ -4,6 +4,7 @@ core = 7.x
 version = 7.x-2.1-beta2
 project = tripal_analysis_go
 package = Tripal Extensions
+
 dependencies[] = tripal_core
 dependencies[] = tripal_feature
 dependencies[] = tripal_analysis

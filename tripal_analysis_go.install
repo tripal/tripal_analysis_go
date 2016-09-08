@@ -13,6 +13,9 @@ function tripal_analysis_go_install(){
    // Register this module as an analysis.
    tripal_register_analysis_child('tripal_analysis_go');
 
+   // Add cvterms.
+   tripal_analysis_go_add_cvterms();
+
    // Add the materialized views.
    tripal_analysis_go_add_mviews();
 }
@@ -53,15 +56,19 @@ function tripal_analysis_go_add_mviews() {
     'table' => $view_name,
     'description' => $comment,
     'fields' => array(
+      'cvname' => array(
+        'type' => 'varchar',
+        'length' => 255,
+      ),
       'cvterm_id' => array(
         'type' => 'int',
         'not null' => TRUE,
       ),
-      'organism_id' => array(
+      'analysis_id' => array(
         'type' => 'int',
         'not null' => TRUE,
       ),
-      'analysis_id' => array(
+      'organism_id' => array(
         'type' => 'int',
         'not null' => TRUE,
       ),
@@ -96,6 +103,57 @@ function tripal_analysis_go_add_mviews() {
   );
   tripal_add_mview($view_name, 'tripal_analysis_go', $schema, $sql, $comment);
 }
+
+/*******************************************************************************
+ * Function for adding cvterms
+ */
+function tripal_analysis_go_add_cvterms() {
+
+   // Add the cvterms for the analysisprop table
+  tripal_insert_cvterm(array(
+    'name' => 'analysis_go_gaf_file',
+    'def' => 'The input file or directory that contains the GAF content',
+    'cv_name' => 'tripal',
+    'db_name' => 'tripal',
+  ));
+ tripal_insert_cvterm(array(
+   'name' => 'analysis_go_gaf_file_ext',
+   'def' => 'Extension of the GAF files',
+   'cv_name' => 'tripal',
+   'db_name' => 'tripal',
+ ));
+  tripal_insert_cvterm(array(
+    'name' => 'analysis_go_seq_type',
+    'def' => 'The feature type (e.g. mRNA, polypeptide) of the query input file. This type is used to identify the query feature when multiple features have the same name',
+    'cv_name' => 'tripal',
+    'db_name' => 'tripal',
+  ));
+  tripal_insert_cvterm(array(
+    'name' => 'analysis_go_query_uniquename',
+    'def' => 'Indicates if the matched name in the query definition line of the GAF file is feature uniquename',
+    'cv_name' => 'tripal',
+    'db_name' => 'tripal',
+  ));
+  tripal_insert_cvterm(array(
+    'name' => 'analysis_go_method',
+    'def' => 'The method of GO loading (add/replace/remove)',
+    'cv_name' => 'tripal',
+    'db_name' => 'tripal',
+  ));
+  tripal_insert_cvterm(array(
+    'name' => 'analysis_go_re_name',
+    'def' => 'Regular expression for the name',
+    'cv_name' => 'tripal',
+    'db_name' => 'tripal',
+));
+  tripal_insert_cvterm(array(
+    'name' => 'analysis_go_gojob',
+    'def' => 'Execute a job or not',
+    'cv_name' => 'tripal',
+    'db_name' => 'tripal',
+  ));
+}
+
 /**
  * Implements hook_uninstall()
  */
