@@ -1,17 +1,29 @@
-
-.tripal_go-info-box, .tripal_go_summary-info-box {
-   margin-top: 10px;
-   margin-left: 0px;
-   margin-right: 0px;
-   margin-bottom: 0px;
-   padding-top: 0px;
-   padding-left: 0px;
-   padding-bottom: 0px;
-   padding-right: 0px;
-   border-collapse: collapse;
+#tripal_cv_cvterm_info_box {
+   position: absolute;
+   top: 0%; left: 30%;
+   padding:10px;
+   width:650px;
+   display: none;
+   border: 1px solid #000000;
+   background-color: #EFEFEF;
+   opacity: 0.90;
+   -moz-opacity: 0.90;
    z-index: 10;
+   -webkit-border-radius: 5px;
+   -moz-border-radius: 5px;
+   border-radius: 5px;
+   color: #000000;
 }
 
-.tripal_go_summary-info-box .tripal_cv_tree {
-   border-collapse: separate;
+#tripal_cv_cvterm_info_box h3 {
+   border-bottom: 1px solid #AAAAAA;
+}
+
+#tripal_cv_cvterm_info {
+   color: #000000;
+}
+
+.region-content ul.jstree-children {
+    margin: 0;
+    padding: 0 0 0.25em 0.5em;
 }

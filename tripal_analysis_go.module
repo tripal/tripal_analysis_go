@@ -1,8 +1,11 @@
 <?php
 
+require_once "api/tripal_analysis_go.api.inc";
 require_once "includes/tripal_analysis_go.gaf_loader.inc";
 require_once "includes/tripal_analysis_go.admin.inc";
-require_once "includes/tripal_analysis_go.charts.inc";
+require_once "includes/tripal_analysis_go.chado_node.inc";
+require_once "includes/tripal_analysis_go.chart.inc";
+require_once "includes/tripal_analysis_go.tree.inc";
 require_once "theme/tripal_analysis_go.theme.inc";
 
 
@@ -11,8 +14,16 @@ require_once "theme/tripal_analysis_go.theme.inc";
  * Implements hook_init().
  */
 function tripal_analysis_go_init(){
-   // Add style sheet.
-   drupal_add_css(drupal_get_path('module', 'tripal_analysis_go') . '/theme/css/tripal_analysis_go.css', 'theme');
+   drupal_add_css("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/themes/default/style.min.css", array('type' => 'external'));
+
+   drupal_add_css(drupal_get_path('module', 'tripal_analysis_go') . '/theme/css/tripal_analysis_go.css');
+
+   // We need a newer version of jquery for jstree
+   drupal_add_js("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js");
+   drupal_add_js("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js");
+   drupal_add_js("https://www.gstatic.com/charts/loader.js");
+   drupal_add_js("var new_jquery = jQuery.noConflict(true);", 'inline'); // Switch back to old version as default jquery to avoid conflicts
+
    drupal_add_js(drupal_get_path('module', 'tripal_analysis_go') . '/theme/js/tripal_analysis_go.js');
 }
 
@@ -21,60 +32,44 @@ function tripal_analysis_go_init(){
  */
 function tripal_analysis_go_menu() {
   $items = array();
-  
-  $items['download_goterm_features'] = array(
-    'path' => 'download_goterm_features',
-    'title' => t('Get GO Term Features'),
-    'page callback' => 'tripal_analysis_go_get_goterm_features',
-    'page arguments' => array(1,2),
-    'access arguments' => array('access chado_analysis_go content'),
-    'type' => MENU_CALLBACK
-  );
-  $items['tripal_analysis_go_org_charts'] = array(
-    'path' => 'tripal_analysis_go_org_charts',
-    'title' => t('Analysis GO Charts'),
-    'page callback' => 'tripal_analysis_go_org_charts',
-    'page arguments' => array(1),
-    'access arguments' => array('access chado_analysis_go content'),
-    'type' => MENU_CALLBACK
-  );
+
   $items['admin/tripal/extension/tripal_go_analysis'] = array(
-    'title' => 'Tripal GO Analyses',
+    'title' => 'GO Analyses',
+    'description' => 'Administrative pages for the Tripal GO Analysis module.',
+    'page callback' => 'tripal_analysis_go_admin_view',
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['admin/tripal/extension/tripal_go_analysis/configuration'] = array(
+    'title' => 'Settings',
     'description' => 'Settings for the displays of GO analysis results.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('tripal_analysis_go_settings_form'),
-    'access arguments' => array('administer tripal'),
-    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1
   );
-  $items['admin/tripal/loaders/gaf_load'] = array(
-    'title' => t('GAF File Loader'),
-    'description' => t("Import Gene Ontology's GAF 2.0 file format to associate GO terms with features."),
+  $items['admin/tripal/extension/tripal_go_analysis/sync'] = array(
+    'title' => ' Sync',
+    'description' => 'Create pages on this site for GO analyses',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('tripal_analysis_go_gaf_load_form'),
-    'access arguments' => array('administer tripal'),
-    'type' => MENU_NORMAL_ITEM,
+    'page arguments' => array('chado_node_sync_form', 'tripal_analysis_go', 'chado_analysis_go'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2
   );
+  $items['download_goterm_features'] = array(
+      'path' => 'download_goterm_features',
+      'title' => t('Get GO Term Features'),
+      'page callback' => 'tripal_analysis_go_get_goterm_features',
+      'page arguments' => array(1,2),
+      'access arguments' => array('access chado_analysis_go content'),
+      'type' => MENU_CALLBACK
+   );
 
    return $items;
 }
-
-/**
- * Implements hook_node_view().
- */
-function tripal_analysis_go_node_view($node, $view_mode, $langcode) {
-
-  switch ($node->type) {
-    case 'chado_organism':
-      if ($view_mode == 'full') {
-        $node->content['tripal_organism_go_summary'] = array(
-          '#markup' => theme('tripal_organism_go_summary', array('node' => $node)),
-          '#tripal_toc_id'    => 'GO',
-          '#tripal_toc_title' => 'GO Analysis Reports',
-        );
-      }
-      break;
-   }
- }
 
 /**
  * Implements hook_theme().
@@ -82,13 +77,48 @@ function tripal_analysis_go_node_view($node, $view_mode, $langcode) {
 function tripal_analysis_go_theme($existing, $type, $theme, $path) {
   $core_path = drupal_get_path('module', 'tripal_core');
   $items = array(
+    'node__chado_analysis_go' => array (
+      'template' => 'node--chado-generic',
+      'render element' => 'node',
+      'base hook' => 'node',
+      'path' => "$core_path/theme/templates"
+    ),
+    'tripal_analysis_go_base' => array(
+      'variables' => array('node' => NULL),
+      'template' => 'tripal_analysis_go_base',
+      'path' => "$path/theme/templates",
+    ),
+    'tripal_analysis_go_teaser' => array(
+      'variables' => array('node' => NULL),
+      'template' => 'tripal_analysis_go_teaser',
+      'path' => "$path/theme/templates",
+    ),
     'tripal_organism_go_summary' => array (
       'variables' => array('node' => null),
       'template' => 'tripal_organism_go_summary',
       'path' => "$path/theme/templates",
     ),
+
+    // tripal_feature theme
+    'tripal_feature_go_results' => array (
+        'template' => 'tripal_feature_go_results',
+        'variables' => array ('node' => NULL),
+        'path' => "$path/theme/templates"
+    ),
   );
   return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function tripal_analysis_go_permission() {
+  return array(
+    'access chado_analysis_go content' => array(
+      'title' => t('View GO Analyses'),
+      'description' => t('Allow users to view GO analysis pages.'),
+    ),
+  );
 }
 
 /**
@@ -97,40 +127,28 @@ function tripal_analysis_go_theme($existing, $type, $theme, $path) {
  * @ingroup tripal_feature
  */
 function tripal_analysis_go_job_describe_args($callback,$args){
-
    $new_args = array();
    if($callback == 'tripal_analysis_go_load_gaf'){
-      
-      $new_args['GAF 2.0 file'] = $args[0];
 
-      $organism = tripal_core_chado_select('organism',array('genus','species'),array('organism_id' => $args[1]));
-      $new_args['Organism'] = $organism[0]->genus." ". $organism[0]->species;
-      $new_args['Sequence Type'] = $args[7];
-      if(!$args[8]){
+      // add in the analysis
+      if($args[2]){
+         $analysis = chado_select_record('analysis',array('name'),array('analysis_id' => $args[0]));
+         $new_args['Analysis'] = $analysis[0]->name;
+      }
+
+      $new_args['GAF 2.0 file'] = $args[1];
+
+      $new_args['Sequence Type'] = $args[2];
+
+      if(!$args[3]){
         $new_args['Use Unique Name'] = 'No';
       } else {
         $new_args['Use Unique Name'] = 'Yes';
       }
 
-      // add in the analysis 
-      if($args[2]){
-         $analysis = tripal_core_chado_select('analysis',array('name'),array('analysis_id' => $args[2]));
-      }
-      $new_args['Analysis'] = $analysis[0]->name;
+      $new_args['Function to perform'] = $args[4];
 
-      if($args[3]){
-        $new_args['Function to perform'] = 'Add GO terms';
-      }
-      if($args[4]){
-        $new_args['Function to perform'] = 'Replace GO terms';
-      }
-      if($args[5]){
-        $new_args['Function to perform'] = 'Delete GO terms';
-      }
-
-      $new_args['Regular expression for the feature name'] = $args[6];
-
-
+      $new_args['Regular expression for the feature name'] = $args[5];
    }
    return $new_args;
 }
