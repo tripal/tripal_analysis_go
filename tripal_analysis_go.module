@@ -24,6 +24,7 @@ function tripal_analysis_go_init(){
    drupal_add_js("https://www.gstatic.com/charts/loader.js");
    drupal_add_js("var new_jquery = jQuery.noConflict(true);", 'inline'); // Switch back to old version as default jquery to avoid conflicts
 
+   drupal_add_js('misc/ajax.js');
    drupal_add_js(drupal_get_path('module', 'tripal_analysis_go') . '/theme/js/tripal_analysis_go.js');
 }
 
