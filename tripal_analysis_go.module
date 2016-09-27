@@ -14,18 +14,45 @@ require_once "theme/tripal_analysis_go.theme.inc";
  * Implements hook_init().
  */
 function tripal_analysis_go_init(){
-   drupal_add_css("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/themes/default/style.min.css", array('type' => 'external'));
+  drupal_add_css("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.2/themes/default/style.min.css", array('type' => 'external'));
 
-   drupal_add_css(drupal_get_path('module', 'tripal_analysis_go') . '/theme/css/tripal_analysis_go.css');
+  drupal_add_css(drupal_get_path('module', 'tripal_analysis_go') . '/theme/css/tripal_analysis_go.css');
 
-   // We need a newer version of jquery for jstree
-   drupal_add_js("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js");
-   drupal_add_js("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js");
-   drupal_add_js("https://www.gstatic.com/charts/loader.js");
-   drupal_add_js("var new_jquery = jQuery.noConflict(true);", 'inline'); // Switch back to old version as default jquery to avoid conflicts
+  // We need a newer version of jquery for jstree
+  drupal_add_js("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js", array(
+    'type' => 'external',
+    'scope' => 'header',
+    'group' => 15,
+    'every_page' => TRUE,
+    'weight' => 100,
+  ));
+  drupal_add_js("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js", array(
+    'type' => 'external',
+    'scope' => 'header',
+    'group' => 15,
+    'every_page' => TRUE,
+    'weight' => 400,
+  ));
+  drupal_add_js("https://www.gstatic.com/charts/loader.js", array(
+    'type' => 'external',
+    'scope' => 'header',
+    'group' => 15,
+    'every_page' => TRUE,
+    'weight' => 400,
+  ));
+  drupal_add_js("if (typeof feature_viewer_jquery == 'undefined') {var feature_viewer_jquery = jQuery.noConflict(true);}", array(
+    'type' => 'inline',
+    'scope' => 'header',
+    'group' => 15,
+    'every_page' => TRUE,
+    'weight' => 1000,
+  ));
 
-   drupal_add_js('misc/ajax.js');
-   drupal_add_js(drupal_get_path('module', 'tripal_analysis_go') . '/theme/js/tripal_analysis_go.js');
+  drupal_add_js('misc/ajax.js');
+  drupal_add_js(drupal_get_path('module', 'tripal_analysis_go') . '/theme/js/tripal_analysis_go.js', array(
+    'group' => 15,
+    'weight' => 1200,
+  ));
 }
 
 /**

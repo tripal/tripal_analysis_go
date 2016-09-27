@@ -131,4 +131,4 @@ function tripal_cv_cvterm_info(cvterm_id, vars){
   });
   return false;
 }
-})(new_jquery);
+})(feature_viewer_jquery);
