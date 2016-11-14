@@ -23,7 +23,6 @@ $.fn.tripal_analysis_go_init_graph = function() {
             'dataType': 'json',
             'type': 'POST',
             success: function(data){
-                console.log(data);
                 var graph_id = data[1];
                 var content = data[0]
 
