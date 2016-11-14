@@ -127,7 +127,7 @@ function tripal_cv_init_tree($cv_id, $cnt_table = NULL, $fk_column = NULL,
     $count = 0;
     if ($cnt_table) {
       $cnt_results = chado_query($cnt_sql, array(':cvterm_id' => $term->cvterm_id));
-      $count = $cnt_results->rowCount();
+      $count = $cnt_results->fetchObject()->num_items;
 
       if ($count > 0) {
         $name .= " ($count $label(s))";
@@ -198,7 +198,7 @@ function tripal_cv_get_term_children($cvterm_id, $cnt_table = NULL,
         if ($cnt_table) {
             $count = 0;
             $cnt_results = chado_query($cnt_sql, array('cvterm_id' => $term->subject_id));
-            $count = $cnt_results->rowCount();
+            $count = $cnt_results->fetchObject()->num_items;
 
             if ($count > 0) {
                 $name .= " (" . number_format($count) . " $label)";

@@ -109,22 +109,19 @@ function tripal_cv_count_chart($cnt_table, $fk_column,
   $axis = array();
   $legend = array();
   $total = 0;
-  $max = 0;
   $i = 1;
   while ($term = $results->fetchObject()) {
 
+    $term_num = intval($term->num_items);
     if ($is_pie) {
       $axis[] = "$term->name";
-      $data[] = array($term->num_items, 0, 0);
+      $data[] = array($term_num, 0, 0);
     }
     else {
       $axis[] = "$term->name";
-      $data[] = array($term->num_items);
+      $data[] = array($term_num);
     }
-    if ($term->num_items > $max) {
-      $max = $term->num_items;
-    }
-    $total += $term->num_items;
+    $total += $term_num;
     $i++;
   }
 
