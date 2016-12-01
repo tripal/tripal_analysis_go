@@ -244,10 +244,10 @@ function tripal_analysis_go_load_gaf_go_term($feature, $dbxref, $method, $analys
       // Insert GO terms into analysisfeatureprop table
       $values = array('analysisfeature_id' => $analysisfeature_id,
                       'type_id' => $cvterm->cvterm_id,
+                      'value' => "$dbname:$accession",
                       'rank' => 0);
       $analysisfeatureprop = chado_select_record('analysisfeatureprop',array('*'),$values);
       if(sizeof($analysisfeatureprop) == 0){
-         $values['value'] = $matches[1];
          $analysisfeatureprop = chado_insert_record('analysisfeatureprop',$values);
       }
    }
