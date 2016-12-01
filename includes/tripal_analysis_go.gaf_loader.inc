@@ -229,7 +229,7 @@ function tripal_analysis_go_load_gaf_go_term($feature, $dbxref, $method, $analys
    }
 
    if($method != 'Remove GO terms'){
-      print "   Associating feature $feature->name to analysis\n";
+      print "   Associating feature $feature->uniquename to analysis $analysis_id\n";
 
       // Insert into analysisfeature table only if it doesn't already exist
       $values = array('feature_id' => $feature->feature_id, 'analysis_id' => $analysis_id);
