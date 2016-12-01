@@ -229,8 +229,6 @@ function tripal_analysis_go_load_gaf_go_term($feature, $dbxref, $method, $analys
    }
 
    if($method != 'Remove GO terms'){
-      print "   Associating feature $feature->uniquename to analysis $analysis_id\n";
-
       // Insert into analysisfeature table only if it doesn't already exist
       $values = array('feature_id' => $feature->feature_id, 'analysis_id' => $analysis_id);
       $analysisfeature = chado_select_record('analysisfeature',array('*'),$values);
@@ -248,6 +246,7 @@ function tripal_analysis_go_load_gaf_go_term($feature, $dbxref, $method, $analys
                       'rank' => 0);
       $analysisfeatureprop = chado_select_record('analysisfeatureprop',array('*'),$values);
       if(sizeof($analysisfeatureprop) == 0){
+         print "   Associating feature $feature->uniquename to analysis $analysis_id\n";
          $analysisfeatureprop = chado_insert_record('analysisfeatureprop',$values);
       }
    }
