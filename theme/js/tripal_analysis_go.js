@@ -109,7 +109,7 @@ $.fn.tripal_analysis_go_init_tree = function() {
 };
 
 function tripal_cv_cvterm_info(cvterm_id, vars){
-  var link = Drupal.settings.basePath;
+  var link = baseurl;
   link += '/tripal_cv_cvterm_info/' + cvterm_id + '?cv=' + vars.cv + '&tree_id=' + vars.tree_id;
 
   // Get the cv_id from DOM

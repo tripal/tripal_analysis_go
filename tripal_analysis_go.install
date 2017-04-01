@@ -38,12 +38,12 @@ function tripal_analysis_go_add_mviews() {
     FROM
     (SELECT DISTINCT AF.analysis_id, AF.feature_id,CVT.name as cvname,
        CVT.cvterm_id,CVTP.object_id,CV.name, F.organism_id
-     FROM analysisfeatureprop AFP
-       INNER JOIN analysisfeature AF ON AF.analysisfeature_id = AFP.analysisfeature_id
-       INNER JOIN feature F          ON AF.feature_id = F.feature_id
-       INNER JOIN cvtermpath CVTP    ON CVTP.subject_id = AFP.type_id
-       INNER JOIN cvterm CVT         ON CVTP.object_id = CVT.cvterm_id
-       INNER JOIN CV                 ON CV.cv_id = CVT.cv_id
+     FROM {analysisfeatureprop} AFP
+       INNER JOIN {analysisfeature} AF ON AF.analysisfeature_id = AFP.analysisfeature_id
+       INNER JOIN {feature} F          ON AF.feature_id = F.feature_id
+       INNER JOIN {cvtermpath} CVTP    ON CVTP.subject_id = AFP.type_id
+       INNER JOIN {cvterm} CVT         ON CVTP.object_id = CVT.cvterm_id
+       INNER JOIN {cv} CV                 ON CV.cv_id = CVT.cv_id
 
      WHERE
        (CV.name = 'biological_process' or

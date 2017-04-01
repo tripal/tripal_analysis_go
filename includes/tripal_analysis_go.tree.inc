@@ -16,8 +16,10 @@ function tripal_analysis_go_cv_tree($tree_id){
      $class = 'biological_process';
   }
 
+  $cv = tripal_get_cv(array('name' => $class));
+
   $options = array(
-     'cv_id'            => tripal_cv_get_cv_id($class),
+     'cv_id'            => $cv->cv_id,
      'count_mview'      => 'go_count_analysis',
      'cvterm_id_column' => 'cvterm_id',
      'count_column'     => 'feature_count',
@@ -166,10 +168,10 @@ function tripal_cv_get_term_children($cvterm_id, $cnt_table = NULL,
         CVT1.name as subject_name, CVT3.name as type_name, CVTR.type_id,
         CVT2.name as object_name,CVTR.object_id
         FROM {cvterm_relationship} CVTR
-        INNER JOIN CVTerm CVT1 on CVTR.subject_id = CVT1.cvterm_id
-        INNER JOIN CVTerm CVT2 on CVTR.object_id = CVT2.cvterm_id
-        INNER JOIN CVTerm CVT3 on CVTR.type_id = CVT3.cvterm_id
-        INNER JOIN CV on CV.cv_id = CVT1.cv_id
+        INNER JOIN {CVTerm} CVT1 on CVTR.subject_id = CVT1.cvterm_id
+        INNER JOIN {CVTerm} CVT2 on CVTR.object_id = CVT2.cvterm_id
+        INNER JOIN {CVTerm} CVT3 on CVTR.type_id = CVT3.cvterm_id
+        INNER JOIN {CV} on CV.cv_id = CVT1.cv_id
         WHERE CVTR.object_id = :cvterm_id
         ORDER BY CVT1.name
     ";
@@ -251,9 +253,9 @@ function tripal_cv_cvterm_info($cvterm_id) {
     SELECT CVT.name as cvtermname, CVT.definition, CV.name as cvname,
        DBX.accession,DB.urlprefix,DB.db_id,DB.name as dbname
     FROM {CVTerm} CVT
-      INNER JOIN CV on CVT.cv_id = CV.cv_id
-      INNER JOIN dbxref DBX on CVT.dbxref_id = DBX.dbxref_id
-      INNER JOIN DB on DBX.db_id = DB.db_id
+      INNER JOIN {CV} on CVT.cv_id = CV.cv_id
+      INNER JOIN {dbxref} DBX on CVT.dbxref_id = DBX.dbxref_id
+      INNER JOIN {DB} on DBX.db_id = DB.db_id
     WHERE CVT.cvterm_id = :cvterm_id
   ";
 
@@ -262,7 +264,7 @@ function tripal_cv_cvterm_info($cvterm_id) {
   $sql = "
     SELECT CVTS.synonym, CVT.name as cvname
     FROM {cvtermsynonym} CVTS
-      INNER JOIN cvterm CVT on CVTS.type_id = CVT.cvterm_id
+      INNER JOIN {cvterm} CVT on CVTS.type_id = CVT.cvterm_id
     WHERE CVTS.cvterm_id = :cvterm_id
 
   ";
