@@ -115,8 +115,8 @@ function tripal_cv_init_tree($cv_id, $cnt_table = NULL, $fk_column = NULL,
     }
     $cnt_sql = "
        SELECT CVT.name, CVT.cvterm_id, CNT.$cnt_column as num_items
-       FROM {$cnt_table} CNT
-        INNER JOIN cvterm CVT on CNT.$fk_column = CVT.cvterm_id
+       FROM {" . $cnt_table . "} CNT
+        INNER JOIN {cvterm} CVT on CNT.$fk_column = CVT.cvterm_id
        WHERE $filter AND CVT.cvterm_id = :cvterm_id
        ORDER BY $cnt_column desc
     ";
@@ -184,8 +184,8 @@ function tripal_cv_get_term_children($cvterm_id, $cnt_table = NULL,
         }
         $cnt_sql = "
             SELECT CVT.name, CVT.cvterm_id, CNT.$cnt_column as num_items
-            FROM {$cnt_table} CNT
-            INNER JOIN cvterm CVT on CNT.$fk_column = CVT.cvterm_id
+            FROM {" . $cnt_table . "} CNT
+            INNER JOIN {cvterm} CVT on CNT.$fk_column = CVT.cvterm_id
             WHERE $filter AND CVT.cvterm_id = :cvterm_id
             ORDER BY $cnt_column desc
         ";

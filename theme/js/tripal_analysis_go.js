@@ -14,8 +14,7 @@ Drupal.ajax.prototype.commands.invoke = function (ajax, response, status) {
 google.charts.load('current', {'packages':['corechart']});
 
 $.fn.tripal_analysis_go_init_graph = function() {
-    baseurl = Drupal.settings.basePath;
-
+    
     $('.tripal_cv_chart').each(function(index) {
 
         $.ajax({
@@ -50,8 +49,7 @@ $.fn.tripal_analysis_go_init_graph = function() {
 
 
 $.fn.tripal_analysis_go_init_tree = function() {
-    baseurl = Drupal.settings.basePath;
-
+    
     $('.tripal_cv_tree').each(function(index) {
 
         // Get some info to create the tree
