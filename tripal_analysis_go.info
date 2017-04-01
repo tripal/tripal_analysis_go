@@ -1,7 +1,7 @@
 name = Tripal GO
 description = An analysis sub-module for displaying GO analysis and GO assignments to features.
 core = 7.x
-version = 7.x-2.1-beta2
+version = 7.x-2.1
 project = tripal_analysis_go
 package = Tripal Extensions
 
