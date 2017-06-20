@@ -145,7 +145,7 @@ function tripal_analysis_go_add_cvterms() {
     'def' => 'Regular expression for the name',
     'cv_name' => 'tripal',
     'db_name' => 'tripal',
-));
+  ));
   tripal_insert_cvterm(array(
     'name' => 'analysis_go_gojob',
     'def' => 'Execute a job or not',
