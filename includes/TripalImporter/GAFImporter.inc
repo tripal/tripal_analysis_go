@@ -348,7 +348,7 @@ class GAFImporter extends TripalImporter {
       $product   = $cols[16];
 
       // Get the name, uniquename or dbxref accession for the feature.
-      $name = $cols[$name_col];
+      $name = $cols[$name_col-1];
       if($re_name){
         if(!preg_match("/$re_name/", $object, $matches)){
           $this->logMessage("Regular expression for the feature name finds nothing: '$object'");
@@ -406,12 +406,12 @@ class GAFImporter extends TripalImporter {
           'feature_id' => $feature_id
         );
         if (!$feature_id) {
-          $this->logMessage('Cannot find a feature with a database cross reference of: "!ref"', array('!ref' => $name));
+          $this->logMessage('Cannot find a feature with a database cross reference of, "!ref", for the given organism and feature type.', array('!ref' => $name));
           continue;
         }
       }
-      $feature = chado_select_record('feature', array('*'), $values);
 
+      $feature = chado_select_record('feature', array('*'), $values);
 
       if (count($feature) == 0) {
         $this->logMessage("Cannot find the feature: '$name'");
