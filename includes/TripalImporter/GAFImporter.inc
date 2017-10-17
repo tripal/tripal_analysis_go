@@ -238,7 +238,7 @@ class GAFImporter extends TripalImporter {
    */
   public function run() {
     $arguments = $this->arguments['run_args'];
-    $gaf_file = $this->arguments['file']['file_path'];
+    $gaf_file = $this->arguments['files'][0]['file_path'];
 
     // Get the importer arguments.
     $analysis_id = $this->arguments[run_args]['analysis_id'];

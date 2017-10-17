@@ -10,8 +10,11 @@
  */
 function tripal_analysis_go_install(){
 
-   // Register this module as an analysis.
-   tripal_register_analysis_child('tripal_analysis_go');
+   // For Tripal v2 backwards compatibility, register this
+   // module as an analysis.
+   if (module_exists('tripal_analysis')) {
+    tripal_register_analysis_child('tripal_analysis_go');
+   }
 
    // Add cvterms.
    tripal_analysis_go_add_cvterms();
@@ -165,8 +168,11 @@ function tripal_analysis_go_uninstall(){
     tripal_delete_mview($mview_id);
   }
 
-  // Unregister the child analysis.
-  tripal_unregister_analysis_child('tripal_analysis_go');
+  // For Tripal v2 backwards compatibility, un register this
+  // module as an analysis.
+  if (module_exists('tripal_analysis')) {
+    tripal_unregister_analysis_child('tripal_analysis_go');
+  }
 }
 
 /*******************************************************************************
