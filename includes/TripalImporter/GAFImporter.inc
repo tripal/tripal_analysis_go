@@ -25,7 +25,6 @@ class GAFImporter extends TripalImporter {
    */
   public static $file_types = array();
 
-
   /**
    * Provides information to the user about the file upload.  Typically this
    * may include a description of the file types allowed.
@@ -36,6 +35,12 @@ class GAFImporter extends TripalImporter {
    * The title that should appear above the upload button.
    */
   public static $upload_title = 'GAF File';
+
+  /**
+   * Text that should appear on the button at the bottom of the importer
+   * form.
+   */
+  public static $button_text = 'Import GAF file';
 
   /**
    * If the loader should require an analysis record.  To maintain provenance
@@ -54,12 +59,6 @@ class GAFImporter extends TripalImporter {
    * analysis should be required.
    */
   public static $require_analysis = TRUE;
-
-  /**
-   * Text that should appear on the button at the bottom of the importer
-   * form.
-   */
-  public static $button_text = 'Import File';
 
   /**
    * Indicates the methods that the file uploader will support.
@@ -158,7 +157,7 @@ class GAFImporter extends TripalImporter {
         ),
         '#description' => t('Select how this loader will match names. Chado stores
             features using a name and a unique name. The unique name is usually
-            the unique idnetifier for the feature and is guaranteed to be
+            the unique identifier for the feature and is guaranteed to be
             unique for the species and sequence type.  Alternatively, if
             the features are referred to with a different database\'s
             unique accession numbers then choose "Cross Reference".'),
@@ -241,13 +240,13 @@ class GAFImporter extends TripalImporter {
     $gaf_file = $this->arguments['files'][0]['file_path'];
 
     // Get the importer arguments.
-    $analysis_id = $this->arguments[run_args]['analysis_id'];
-    $organism_id = $this->arguments[run_args]['organism_id'];
-    $gaf_file_ext = $this->arguments[run_args]['gaf_file_ext'];
-    $seq_type  = $this->arguments[run_args]['seq_type'];
-    $query_type = $this->arguments[run_args]['query_type'];
-    $re_name = $this->arguments[run_args]['re_name'];
-    $name_col = $this->arguments[run_args]['name_col'];
+    $analysis_id = $this->arguments['run_args']['analysis_id'];
+    $organism_id = $this->arguments['run_args']['organism_id'];
+    $gaf_file_ext = $this->arguments['run_args']['gaf_file_ext'];
+    $seq_type  = $this->arguments['run_args']['seq_type'];
+    $query_type = $this->arguments['run_args']['query_type'];
+    $re_name = $this->arguments['run_args']['re_name'];
+    $name_col = $this->arguments['run_args']['name_col'];
 
     if (is_dir($gaf_file)) {
       $this->loadMultiGAF($analysis_id, $organism_id, $file_path, $gaf_file_ext,
