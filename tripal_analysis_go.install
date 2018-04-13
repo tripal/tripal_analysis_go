@@ -104,7 +104,8 @@ function tripal_analysis_go_add_mviews() {
       ),
     ),
   );
-  tripal_add_mview($view_name, 'tripal_analysis_go', $schema, $sql, $comment);
+  $redirect = FALSE;
+  tripal_add_mview($view_name, 'tripal_analysis_go', $schema, $sql, $comment, $redirect);
 }
 
 /*******************************************************************************
