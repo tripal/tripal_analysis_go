@@ -65,7 +65,7 @@ function tripal_analysis_go_load_organism_go_summary($node) {
 * @param $node
 *
 */
-function tripal_analysis_go_select_form($form, $form_state, $node) {
+function tripal_analysis_go_select_form($form, $form_state, $organism_id) {
 
   $form = array();
 
@@ -78,20 +78,15 @@ function tripal_analysis_go_select_form($form, $form_state, $node) {
     AND GO.analysis_id = a.analysis_id
     ORDER BY GO.analysis_id DESC
   ";
-  $results = chado_query($sql, array(':organism_id' => $node->organism->organism_id));
+  $results = chado_query($sql, array(':organism_id' => $organism_id));
 
   // now build the list of analyses to use in the drop down element
   $analyses = array();
   $analyses[''] = '';
-  while ($analysis = $results->fetchObject()) {
-    # check to see if the user has permission to see this analysis
-    $nid = chado_get_nid_from_id('analysis', $analysis->analysis_id);
-    $anode = node_load($nid);
-    if (node_access("view", $anode)) {
-      $analyses[$analysis->analysis_id."-".$node->organism->organism_id] = "$analysis->name";
-    }
-  }
 
+  while ($analysis = $results->fetchObject()) {
+    $analyses[$analysis->analysis_id."-".$organism_id] = "$analysis->name";
+  }
   // now generate the select box
   $form['tripal_analysis_go_select'] = array(
     '#title' => t('Select a GO report to view'),
