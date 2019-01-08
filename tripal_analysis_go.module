@@ -6,6 +6,7 @@ require_once "includes/tripal_analysis_go.admin.inc";
 require_once "includes/tripal_analysis_go.chado_node.inc";
 require_once "includes/tripal_analysis_go.chart.inc";
 require_once "includes/tripal_analysis_go.tree.inc";
+require_once "includes/tripal_analysis_go.fields.inc";
 require_once "theme/tripal_analysis_go.theme.inc";
 
 
