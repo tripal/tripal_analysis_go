@@ -39,6 +39,9 @@ function tripal_analysis_go_bundle_fields_info($entity_type, $bundle) {
   // Because we are expecting data housed in Chado we can use the 'data_table'
   // property of the bundle to determine if this bundle is really the one
   // we want the field to be associated with.
+
+  if (isset($bundle->data_table) AND ($bundle->data_table == 'organism')) {
+
     // First add my term.
     tripal_insert_cvterm(array(
       'id' => 'local:go_results',
@@ -46,7 +49,7 @@ function tripal_analysis_go_bundle_fields_info($entity_type, $bundle) {
       'cv_name' => 'local',
       'definition' => 'Go results',
     ));
-
+    
     // Then describe the field defined by that term.
     $field_name = 'local__go_results';
     $field_type = 'local__go_results';
@@ -59,7 +62,8 @@ function tripal_analysis_go_bundle_fields_info($entity_type, $bundle) {
         'type' => 'field_chado_storage',
       ),
     );
-
+  }
+   
   return $fields;
 }
 
@@ -87,7 +91,7 @@ function tripal_analysis_go_bundle_fields_info($entity_type, $bundle) {
  */
 function tripal_analysis_go_bundle_instances_info($entity_type, $bundle) {
   $instances = array();
-
+  if (isset($bundle->data_table) AND ($bundle->data_table == 'organism')) {
     $field_name = 'local__go_results';
     $field_type = 'local__go_results';
     $instances[$field_name] =  array(
@@ -118,6 +122,6 @@ function tripal_analysis_go_bundle_instances_info($entity_type, $bundle) {
         ),
       ),
     );
-
+  }
   return $instances;
 }
