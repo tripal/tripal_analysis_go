@@ -61,7 +61,7 @@ function tripal_analysis_go_init(){
  */
 function tripal_analysis_go_menu() {
   $items = array();
-
+/*
   $items['admin/tripal/extension/tripal_go_analysis'] = array(
     'title' => 'GO Analyses',
     'description' => 'Administrative pages for the Tripal GO Analysis module.',
@@ -88,6 +88,7 @@ function tripal_analysis_go_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 2
   );
+*/
   $items['download_goterm_features'] = array(
       'path' => 'download_goterm_features',
       'title' => t('Get GO Term Features'),
