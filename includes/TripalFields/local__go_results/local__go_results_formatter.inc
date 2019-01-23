@@ -52,14 +52,6 @@ class local__go_results_formatter extends ChadoFieldFormatter {
       $form = drupal_get_form('tripal_analysis_go_select_form', $organism_id);
       $content = drupal_render($form);
 
-     /*
-      $content .= '<div id="tripal_analysis_go_org_charts"></div>';
-      $content .= '<div id="tripal_cv_cvterm_info_box">';
-      $content .= '<a href="#" onclick="jQuery("#tripal_cv_cvterm_info_box").hide(); return false;" style="float: right">Close [X]</a>';
-      $content .= '<div>Term Information</div>';
-      $content .= '<div id="tripal_cv_cvterm_info"></div></div>';
-     */
-
       $content .= '
         <div id="tripal_analysis_go_org_charts"></div>
         <div id="tripal_cv_cvterm_info_box">
