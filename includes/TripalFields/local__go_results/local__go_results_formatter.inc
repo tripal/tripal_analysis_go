@@ -49,7 +49,7 @@ class local__go_results_formatter extends ChadoFieldFormatter {
       ->execute()->fetchField();
 
     if(user_access('view ' . $bundle_id)){
-      $form = drupal_get_form('tripal_analysis_go_select_form', $organism_id);
+      $form = drupal_get_form('tripal_analysis_go_select_form', null, $organism_id);
       $content = drupal_render($form);
 
       $content .= '
