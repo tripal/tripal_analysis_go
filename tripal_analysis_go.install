@@ -176,17 +176,16 @@ function tripal_analysis_go_uninstall(){
   }
 }
 
-/*******************************************************************************
- * Implementation of hook_requirements(). Make sure 'Tripal Core' and 'Tripal
- * Analysis' are enabled before installation
+/**
+ * Implements hook_requirements
  */
 function tripal_analysis_go_requirements($phase) {
   $requirements = array();
   if ($phase == 'install') {
     // make sure chado is installed
     if (!$GLOBALS["chado_is_installed"]) {
-      $requirements ['tripal_feature'] = array(
-          'title' => "t ripal_feature",
+      $requirements ['tripal_analysis_go'] = array(
+          'title' => "tripal_analysis_go",
           'value' => "ERROR: Chado must be installed before this module can be enabled",
           'severity' => REQUIREMENT_ERROR,
       );

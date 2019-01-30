@@ -56,26 +56,6 @@ function tripal_analysis_go_init(){
   ));
 }
 
-
-/**
- * Implements hook_requirements
- */
-function tripal_analysis_go_requirements($phase) {
-  $requirements = array();
-  if ($phase == 'install') {
-    // make sure chado is installed
-    if (!$GLOBALS["chado_is_installed"]) {
-      $requirements ['tripal_analysis_go'] = array(
-          'title' => "tripal_analysis_go",
-          'value' => "ERROR: Chado must be installed before this module can be enabled",
-          'severity' => REQUIREMENT_ERROR,
-      );
-    }
-  }
-  return $requirements;
-}
-
-
 /**
  * Implements hook_menu().
  */
