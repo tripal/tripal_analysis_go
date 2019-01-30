@@ -65,7 +65,12 @@ function tripal_analysis_go_load_organism_go_summary($node) {
 * @param $node
 *
 */
-function tripal_analysis_go_select_form($form, $form_state, $organism_id) {
+function tripal_analysis_go_select_form($form, $form_state, $node=null, $organism_id="") {
+
+  // To maintain compatibility, just in case
+  if(isset($node)){
+    $organism_id = $node->organism->organism_id;
+  };
 
   $form = array();
 
