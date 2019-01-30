@@ -7,4 +7,3 @@ package = Tripal Extensions
 
 dependencies[] = tripal
 dependencies[] = tripal_chado
-dependencies[] = tripal_cv
