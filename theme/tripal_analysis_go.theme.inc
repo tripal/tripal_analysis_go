@@ -65,12 +65,7 @@ function tripal_analysis_go_load_organism_go_summary($node) {
 * @param $node
 *
 */
-function tripal_analysis_go_select_form($form, $form_state, $node=null, $analyses=array(), $organism_id="") {
-
-  // To maintain compatibility, just in case
-  if(isset($node)){
-    $organism_id = $node->organism->organism_id;
-  };
+function tripal_analysis_go_select_form($form, $form_state, $node=null, $analyses=array()) {
 
   $form = array();
 
@@ -78,6 +73,7 @@ function tripal_analysis_go_select_form($form, $form_state, $node=null, $analyse
   // in the go_count_analysis materialized view
   // Only do this if it was not done in backend (Tripal 2 case)
   if(isset($node)){
+    $organism_id = $node->organism->organism_id;
     $sql = "
       SELECT *
       FROM {go_count_analysis} GO, {analysis} a
