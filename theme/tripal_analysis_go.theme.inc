@@ -65,7 +65,7 @@ function tripal_analysis_go_load_organism_go_summary($node) {
 * @param $node
 *
 */
-function tripal_analysis_go_select_form($form, $form_state, $node=null, $organism_id="") {
+function tripal_analysis_go_select_form($form, $form_state, $node=null, $analyses=array(), $organism_id="") {
 
   // To maintain compatibility, just in case
   if(isset($node)){
@@ -76,21 +76,23 @@ function tripal_analysis_go_select_form($form, $form_state, $node=null, $organis
 
   // find analyses that have GO terms and their organisms.  this is kept
   // in the go_count_analysis materialized view
-  $sql = "
-    SELECT *
-    FROM {go_count_analysis} GO, {analysis} a
-    WHERE organism_id = :organism_id
-    AND GO.analysis_id = a.analysis_id
-    ORDER BY GO.analysis_id DESC
-  ";
-  $results = chado_query($sql, array(':organism_id' => $organism_id));
+  // Only do this if it was not done in backend (Tripal 2 case)
+  if(isset($node)){
+    $sql = "
+      SELECT *
+      FROM {go_count_analysis} GO, {analysis} a
+      WHERE organism_id = :organism_id
+      AND GO.analysis_id = a.analysis_id
+      ORDER BY GO.analysis_id DESC
+    ";
+    $results = chado_query($sql, array(':organism_id' => $organism_id));
 
-  // now build the list of analyses to use in the drop down element
-  $analyses = array();
-  $analyses[''] = '';
+    // now build the list of analyses to use in the drop down element
+    $analyses[''] = '';
 
-  while ($analysis = $results->fetchObject()) {
-    $analyses[$analysis->analysis_id."-".$organism_id] = "$analysis->name";
+    while ($analysis = $results->fetchObject()) {
+      $analyses[$analysis->analysis_id."-".$organism_id] = "$analysis->name";
+    }
   }
   // now generate the select box
   $form['tripal_analysis_go_select'] = array(

@@ -35,21 +35,21 @@ class local__go_results_formatter extends ChadoFieldFormatter {
 
   public function view(&$element, $entity_type, $entity, $langcode, $items, $display) {
 
-    // Get the settings
-    $settings = $display['settings'];
+    if(count($items[0]) == 1){
+        $content= "There are no analyses with Go results available for this organism.";
+    }
+    else {
+      $form = drupal_get_form('tripal_analysis_go_select_form', null, $items[0]);
+      $content = drupal_render($form);
 
-    $organism_id = $entity->chado_record->organism_id;
-
-    $form = drupal_get_form('tripal_analysis_go_select_form', null, $organism_id);
-    $content = drupal_render($form);
-
-    $content .= '
-      <div id="tripal_analysis_go_org_charts"></div>
-      <div id="tripal_cv_cvterm_info_box">
-      <a href="#" onclick="jQuery(\'#tripal_cv_cvterm_info_box\').hide(); return false;" style="float: right">Close [X]</a>
-      <div>Term Information</div>
-      <div id="tripal_cv_cvterm_info"></div></div>
-    ';
+      $content .= '
+        <div id="tripal_analysis_go_org_charts"></div>
+        <div id="tripal_cv_cvterm_info_box">
+        <a href="#" onclick="jQuery(\'#tripal_cv_cvterm_info_box\').hide(); return false;" style="float: right">Close [X]</a>
+        <div>Term Information</div>
+        <div id="tripal_cv_cvterm_info"></div></div>
+      ';
+    }
     $element[] = [
       '#type' => 'markup',
       '#markup' => $content,

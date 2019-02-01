@@ -110,9 +110,30 @@ class local__go_results extends ChadoField {
     // default settings above. If that is all you need then you don't even
     // need to implement this function. However, if you need to add any
     // additional data to be used in the display, you should add it here.
-    parent::load($entity);
-  }
 
+
+    
+    $field_name = $this->field['field_name'];
+    // Cleanup existing data 
+    unset($entity->{$field_name}['und'][0]);
+    $organism_id = $entity->chado_record->organism_id;
+
+    $sql = "
+      SELECT *
+      FROM {go_count_analysis} GO, {analysis} a
+      WHERE organism_id = :organism_id
+      AND GO.analysis_id = a.analysis_id
+      ORDER BY GO.analysis_id DESC
+    ";
+
+    $results = chado_query($sql, array(':organism_id' => $organism_id));
+    // If $entity->{$field_name}['und'] is empty, the field is not shown
+    // Set data for blank option and to avoid an empty field
+    $entity->{$field_name}['und'][0][''] = '';
+    while ($analysis = $results->fetchObject()) {
+        $entity->{$field_name}['und'][0][$analysis->analysis_id."-".$organism_id] = "$analysis->name";   
+    }
+  }
 
 
     /**
