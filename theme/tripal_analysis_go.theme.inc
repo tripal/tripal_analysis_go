@@ -100,7 +100,6 @@ function tripal_analysis_go_select_form($form, $form_state, $node=null, $analyse
       'callback' => "tripal_analysis_go_org_report",
       'wrapper' => 'tripal-analyis-go-report',
       'effect'   => 'fade',
-      'method'   => 'replace',
     ),
     '#suffix' => '<div id="tripal-analyis-go-report"></div>'
   );
