@@ -65,33 +65,31 @@ function tripal_analysis_go_load_organism_go_summary($node) {
 * @param $node
 *
 */
-function tripal_analysis_go_select_form($form, $form_state, $node) {
+function tripal_analysis_go_select_form($form, $form_state, $node=null, $analyses=array()) {
 
   $form = array();
 
   // find analyses that have GO terms and their organisms.  this is kept
   // in the go_count_analysis materialized view
-  $sql = "
-    SELECT *
-    FROM {go_count_analysis} GO, {analysis} a
-    WHERE organism_id = :organism_id
-    AND GO.analysis_id = a.analysis_id
-    ORDER BY GO.analysis_id DESC
-  ";
-  $results = chado_query($sql, array(':organism_id' => $node->organism->organism_id));
+  // Only do this if it was not done in backend (Tripal 2 case)
+  if(isset($node)){
+    $organism_id = $node->organism->organism_id;
+    $sql = "
+      SELECT *
+      FROM {go_count_analysis} GO, {analysis} a
+      WHERE organism_id = :organism_id
+      AND GO.analysis_id = a.analysis_id
+      ORDER BY GO.analysis_id DESC
+    ";
+    $results = chado_query($sql, array(':organism_id' => $organism_id));
 
-  // now build the list of analyses to use in the drop down element
-  $analyses = array();
-  $analyses[''] = '';
-  while ($analysis = $results->fetchObject()) {
-    # check to see if the user has permission to see this analysis
-    $nid = chado_get_nid_from_id('analysis', $analysis->analysis_id);
-    $anode = node_load($nid);
-    if (node_access("view", $anode)) {
-      $analyses[$analysis->analysis_id."-".$node->organism->organism_id] = "$analysis->name";
+    // now build the list of analyses to use in the drop down element
+    $analyses[''] = '';
+
+    while ($analysis = $results->fetchObject()) {
+      $analyses[$analysis->analysis_id."-".$organism_id] = "$analysis->name";
     }
   }
-
   // now generate the select box
   $form['tripal_analysis_go_select'] = array(
     '#title' => t('Select a GO report to view'),
@@ -102,7 +100,6 @@ function tripal_analysis_go_select_form($form, $form_state, $node) {
       'callback' => "tripal_analysis_go_org_report",
       'wrapper' => 'tripal-analyis-go-report',
       'effect'   => 'fade',
-      'method'   => 'replace',
     ),
     '#suffix' => '<div id="tripal-analyis-go-report"></div>'
   );

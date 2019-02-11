@@ -6,6 +6,7 @@ require_once "includes/tripal_analysis_go.admin.inc";
 require_once "includes/tripal_analysis_go.chado_node.inc";
 require_once "includes/tripal_analysis_go.chart.inc";
 require_once "includes/tripal_analysis_go.tree.inc";
+require_once "includes/tripal_analysis_go.fields.inc";
 require_once "theme/tripal_analysis_go.theme.inc";
 
 
@@ -60,7 +61,8 @@ function tripal_analysis_go_init(){
  */
 function tripal_analysis_go_menu() {
   $items = array();
-
+  //Deprecated in Tripal 2
+/*
   $items['admin/tripal/extension/tripal_go_analysis'] = array(
     'title' => 'GO Analyses',
     'description' => 'Administrative pages for the Tripal GO Analysis module.',
@@ -87,6 +89,43 @@ function tripal_analysis_go_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 2
   );
+*/
+
+  $items['tripal_cv_chart'] = array(
+    'path' => 'tripal_cv_chart',
+    'page callback' => 'tripal_cv_chart',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
+
+  $items['tripal_cv_tree'] = array(
+    'path' => 'tripal_cv_tree',
+    'page callback' => 'tripal_cv_tree',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
+
+  // menu item for interaction with the tree
+  $items['tripal_cv_update_tree'] = array(
+    'path' => 'tripal_cv_update_tree',
+    'page callback' => 'tripal_cv_update_tree',
+    'page arguments' => array(2, 3),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
+
+  // menu items for working with terms
+  $items['tripal_cv_cvterm_info'] = array(
+    'path' => 'tripal_cv_cvterm_info',
+    'title' => 'CV Term Viewer',
+    'page callback' => 'tripal_cv_cvterm_info',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
+
   $items['download_goterm_features'] = array(
       'path' => 'download_goterm_features',
       'title' => t('Get GO Term Features'),
